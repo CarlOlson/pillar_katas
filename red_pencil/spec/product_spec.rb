@@ -46,7 +46,9 @@ describe Product do
     it "should start after a >=5% reduction" do
       @product.price = 96
       expect(@product).to_not be_red_pencil
+      @product.price = 100
 
+      @product.day += 30
       @product.price = 95
       expect(@product).to be_red_pencil
     end

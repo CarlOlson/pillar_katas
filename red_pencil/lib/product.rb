@@ -26,6 +26,11 @@ class Product
     if (@price - value).to_f / @price >= 0.05
       @red_pencil = true
     end
+
+    if (@price - value).to_f / @price >= 0.30
+      # prevent suspicious price changes
+      @red_pencil = false
+    end
     
     @price = value
     @last_price_change = @day

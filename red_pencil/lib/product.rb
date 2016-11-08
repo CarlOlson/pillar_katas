@@ -16,6 +16,7 @@ class Product
   
   def price= value
     @price = value
+    @red_pencil = true
   end
 
   def red_pencil?

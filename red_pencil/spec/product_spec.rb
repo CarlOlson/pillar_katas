@@ -8,6 +8,12 @@ describe Product do
     @product.day = 30
   end
 
+  describe "#day=" do
+    it "should not allow going back in time" do
+      expect { @product.day = 0 }.to raise_exception
+    end
+  end
+  
   describe "#price=" do
     it "should update the current price" do
       @product.price = 110

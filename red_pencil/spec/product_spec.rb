@@ -114,7 +114,6 @@ describe Product do
       expect(@product).to_not be_red_pencil
 
       @product.day += 29
-      @product.price = 90
       expect(@product).to_not be_red_pencil
 
       @product.day += 30

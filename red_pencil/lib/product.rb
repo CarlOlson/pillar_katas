@@ -29,11 +29,16 @@ class Product
       self.red_pencil= true
     end
 
+    # prevent suspicious price changes
     if (@price - value).to_f / @price >= 0.30
-      # prevent suspicious price changes
       self.red_pencil= false
     end
 
+    # end promotion on price increase
+    if value > @price
+      self.red_pencil= false
+    end
+    
     if @price != value
       @last_price_change = @day
     end

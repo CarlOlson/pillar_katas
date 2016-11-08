@@ -6,9 +6,11 @@ class Product
   def initialize price
     @price = price
     @day   = 0
-    @red_pencil = false
     @last_price_change = 0
+    
+    @red_pencil = false
     @red_pencil_start = -30
+    @before_promotion_price = price
   end
 
   def day= value
@@ -30,7 +32,7 @@ class Product
     end
 
     # prevent suspicious price changes
-    if (@price - value).to_f / @price >= 0.30
+    if (@before_promotion_price - value).to_f / @price >= 0.30
       self.red_pencil= false
     end
 
@@ -54,6 +56,8 @@ class Product
   def red_pencil= value
     if not @red_pencil and value
       @red_pencil_start = @day
+      # NOTE should be called before price change
+      @before_promotion_price = @price
     end
     @red_pencil = value
   end

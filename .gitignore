@@ -1,5 +1,6 @@
 Gemfile.lock
 .ensime
+.ensime_cache
 vending/project/project
 vending/project/target
 vending/target

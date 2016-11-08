@@ -23,7 +23,8 @@ class Product
   end
   
   def price= value
-    if (@price - value).to_f / @price >= 0.05
+    if ((@price - value).to_f / @price >= 0.05 and
+        @day - @last_price_change >= 30)
       @red_pencil = true
     end
 

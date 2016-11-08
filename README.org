@@ -5,7 +5,7 @@ These were explored and completed in Prolog.  This was not TDD.
 ** Red Pencil
 This was completed in Ruby using TDD with RSpec.
 
-After watching a lecture on TDD it all clicked for me.  If with
+After watching a lecture on TDD it all clicked for me.  With
 test-first development, all code is tested and unnecessary features
 aren't implemented.
 

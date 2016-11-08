@@ -1,6 +1,12 @@
 # coding: utf-8
 
+require "product"
+
 describe Product do
+  before do
+    @product = Product.new 100
+  end
+  
   describe "red pencil promotion" do
     # A red pencil promotion lasts 30 days as the maximum length.
     it "should last 30 days at most"
@@ -32,5 +38,17 @@ describe Product do
     # price was stable for 30 days and these 30 days don’t intersect with
     # a previous red pencil promotion.
     it "should not happen again until 30 days after the last promotion"
+  end
+  
+  describe "#price=" do
+    it "should update the current price" do
+      @product.price = 110
+      @product.price.should be 110
+    end
+
+    it "should trigger a red pencil promotion" do
+      @product.price = 90
+      @product.red_pencil?.should be_true
+    end
   end
 end

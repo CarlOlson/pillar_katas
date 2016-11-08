@@ -1,1 +1,5 @@
 Gemfile.lock
+.ensime
+vending/project/project
+vending/project/target
+vending/target

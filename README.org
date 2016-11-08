@@ -1,1 +1,19 @@
- 
+* Chronological Summary
+** Roman Numeral and Babysitter
+These were explored and completed in Prolog.  This was not TDD.
+
+** Red Pencil
+This was completed in Ruby using TDD with RSpec.
+
+After watching a lecture on TDD it all clicked for me.  If with
+test-first development, all code is tested and unnecessary features
+aren't implemented.
+
+Previously I would do mostly regression tests, this kata was the first
+time I followed a rigid TDD cycle.  I found myself wanting to make the
+Product class be a stateless function over time, but that was really
+more than the problem asked for.  TDD helped me focus on what was
+important and implement those features as simply as possible.
+
+** Vending Machine
+I'm planning to complete this in Scala.

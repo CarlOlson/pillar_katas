@@ -9,7 +9,7 @@ class Product
     @last_price_change = 0
     
     @red_pencil = false
-    @red_pencil_start = -30
+    @last_red_pencil_start = -30
     @before_promotion_price = price
   end
 
@@ -20,14 +20,15 @@ class Product
     
     @day = value
     
-    if @day - @red_pencil_start >= 30
+    if @day - @last_red_pencil_start >= 30
       self.red_pencil= false
     end
   end
   
   def price= value
     if ((@price - value).to_f / @price >= 0.05 and
-        @day - @last_price_change >= 30)
+        @day - @last_price_change >= 30 and
+        @day - @last_red_pencil_start >= 30)
       self.red_pencil= true
     end
 
@@ -55,7 +56,7 @@ class Product
   private
   def red_pencil= value
     if not @red_pencil and value
-      @red_pencil_start = @day
+      @last_red_pencil_start = @day
       # NOTE should be called before price change
       @before_promotion_price = @price
     end

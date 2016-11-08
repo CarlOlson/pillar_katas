@@ -7,16 +7,25 @@ class Product
     @price = price
     @day   = 0
     @red_pencil = false
+    @last_price_change = 0
   end
 
   def day= value
-    raise StandardError if value < day
+    if value < day
+      raise StandardError
+    end
+    
     @day = value
+    
+    if @day - @last_price_change >= 30
+      @red_pencil = false
+    end
   end
   
   def price= value
     @price = value
     @red_pencil = true
+    @last_price_change = @day
   end
 
   def red_pencil?

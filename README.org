@@ -1,8 +1,9 @@
 * Chronological Summary
-** Roman Numeral and Babysitter
-These were explored and completed in Prolog.  This was not TDD.
+*** Roman Numeral and Babysitter
+These were explored and completed in Prolog for fun.  This was not
+TDD.
 
-** Red Pencil
+*** Red Pencil
 This was completed in Ruby using TDD with RSpec.
 
 After watching a lecture on TDD it all clicked for me.  With
@@ -15,5 +16,11 @@ Product class be a stateless function over time, but that was really
 more than the problem asked for.  TDD helped me focus on what was
 important and implement those features as simply as possible.
 
-** Vending Machine
-I'm planning to complete this in Scala.
+*** Vending Machine
+I save the most fun looking one for last.  This was completed with
+Scala, a language I'm still learning.  I used used rigid TDD like in
+Red Pencil, only implementing features after a test fails.
+
+Another benefit of TDD became apparent, one always knows what to do
+next by following the failing tests.  I'm sure using TDD more will
+help increase my productivity by keeping me focused and busy.

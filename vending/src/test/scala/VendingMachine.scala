@@ -252,7 +252,7 @@ class VendingMachineFeatureSpec extends FeatureSpec with GivenWhenThen {
 
       When("it can make change for all products")
       vm.addToBank(List(Nickle))
-      
+
       Then("the display doesn't show a exact change message")
       assert(vm.display !== "EXACT CHANGE ONLY")
     }

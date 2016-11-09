@@ -129,7 +129,7 @@ class VendingMachine {
       case None        => throw new Exception("Unreachable make change error")
     }
 
-  private def makeChangeOption(cents: Int): Option[List[Coin]] = {
+  private def makeChangeOption(cents: Int, coins: List[Coin] = bank.toList ++ insertedCoins): Option[List[Coin]] = {
     def rec(needed: Int, coins: List[Coin], acc: List[Coin]): Option[List[Coin]] = {
       if (needed == 0) {
         Some(acc)
@@ -143,16 +143,37 @@ class VendingMachine {
     }
 
     // sort coins by descending order
-    val coins = (bank.toList ++ insertedCoins).sortBy(_.value).reverse
-    rec(cents, coins, List.empty)
+    rec(cents, coins.sortBy(_.value).reverse, List.empty)
   }
 
-  private def canMakeChange(): Boolean =
-    // bad algorithm, but easy to understand
-    // TODO base on actual items in inventory
-    List(5, 10, 15, 20).forall {
-      makeChangeOption(_) != None
+  // recursively check if able to make change for all combinations of
+  // inserted coins and products
+  private def canMakeChange(): Boolean = {
+    def alwaysPossible(originalCost: Int,
+                       insertedValue: Int,
+                       coins: List[Coin],
+                       inserted: List[Coin]): Boolean =
+      if (insertedValue >= originalCost) {
+        makeChangeOption(originalCost, inserted ++ bank) != None
+      } else if (coins.length == 1) {
+        alwaysPossible(
+          originalCost,
+          insertedValue + coins.head.value,
+          coins,
+          coins.head :: inserted)
+      } else {
+        alwaysPossible(
+          originalCost,
+          insertedValue + coins.head.value,
+          coins,
+          coins.head :: inserted) &&
+        alwaysPossible(originalCost, insertedValue, coins.tail, inserted)
+      }
+
+    inventory.forall { (item) =>
+      alwaysPossible(item.cost, 0, List(Quarter, Dime, Nickle), List())
     }
+  }
 
   private def canMakeChange(cents: Int): Boolean =
     makeChangeOption(cents) != None

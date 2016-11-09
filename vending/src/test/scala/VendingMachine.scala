@@ -138,7 +138,16 @@ class VendingMachineFeatureSpec extends FeatureSpec with GivenWhenThen {
       assert(vm.coinReturn.length === 3)
       assert(vm.coinReturn.map(_.value).sum === 40)
     }
-    scenario("Customer asks money back without inserting change") (pending)
+    scenario("Customer asks money back without inserting change") {
+      Given("a vending machine")
+      val vm = new VendingMachine()
+
+      When("ask for coin return")
+      vm.returnCoins()
+
+      Then("no coins are returned")
+      assert(vm.coinReturn.isEmpty)
+    }
   }
 
   info("As a customer")

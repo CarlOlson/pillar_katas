@@ -2,6 +2,10 @@
 class Product
   attr_reader :price
   attr_reader :day
+
+  ONE_MONTH = 30
+  MIN_CHANGE = 0.05
+  MAX_CHANGE = 0.30
   
   def initialize price
     @price = price
@@ -9,44 +13,43 @@ class Product
     @last_price_change = 0
     
     @red_pencil = false
-    @last_red_pencil_start = -30
+    @last_red_pencil_start = 0
     @before_promotion_price = price
   end
 
-  def day= value
-    if value < day
-      raise StandardError
+  def day= day
+    if day < @day
+      raise StandardError, "Cannot reverse time"
     end
     
-    @day = value
-    
-    if @day - @last_red_pencil_start >= 30
+    if day - @last_red_pencil_start >= ONE_MONTH
       self.red_pencil= false
     end
+
+    @day = day
   end
   
-  def price= value
-    if ((@price - value).to_f / @price >= 0.05 and
-        @day - @last_price_change >= 30 and
-        @day - @last_red_pencil_start >= 30)
+  def price= new_price
+    # activate red pencil promotion
+    if percent_of(new_price, @price) >= MIN_CHANGE and ready_for_new_promotion?
       self.red_pencil= true
     end
-
+    
     # prevent suspicious price changes
-    if (@before_promotion_price - value).to_f / @price >= 0.30
+    if percent_of(new_price, @before_promotion_price) >= MAX_CHANGE
       self.red_pencil= false
     end
 
     # end promotion on price increase
-    if value > @price
+    if new_price > @price
       self.red_pencil= false
     end
     
-    if @price != value
+    if @price != new_price
       @last_price_change = @day
     end
     
-    @price = value
+    @price = new_price
   end
 
   def red_pencil?
@@ -61,5 +64,14 @@ class Product
       @before_promotion_price = @price
     end
     @red_pencil = value
+  end
+
+  def ready_for_new_promotion?
+    @day - @last_price_change >= ONE_MONTH and
+      @day - @last_red_pencil_start >= ONE_MONTH
+  end
+
+  def percent_of value, base
+    (base - value).to_f / base
   end
 end

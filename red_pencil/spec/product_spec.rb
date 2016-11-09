@@ -10,7 +10,7 @@ describe Product do
 
   describe "#day=" do
     it "should not allow going back in time" do
-      expect { @product.day = 0 }.to raise_exception
+      expect { @product.day = 0 }.to raise_exception StandardError, /time/
     end
   end
   

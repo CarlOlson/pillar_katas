@@ -242,5 +242,19 @@ class VendingMachineFeatureSpec extends FeatureSpec with GivenWhenThen {
       assert(vm.dispensor.isEmpty)
       assert(vm.display === "$0.75")
     }
+    scenario("Machine can make change") {
+      Given("a machine with limited stock and change")
+      val vm = new VendingMachine()
+      for (i <- 1 to 3) vm.insertCoin(Quarter.mass, Quarter.diameter)
+      vm.select(Candy)
+      assert(vm.display === "THANK YOU")
+      vm.emptyBank()
+
+      When("it can make change for all products")
+      vm.addToBank(List(Nickle))
+      
+      Then("the display doesn't show a exact change message")
+      assert(vm.display !== "EXACT CHANGE ONLY")
+    }
   }
 }

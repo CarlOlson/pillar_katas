@@ -69,6 +69,9 @@ class VendingMachineFeatureSpec extends FeatureSpec with GivenWhenThen {
       assert(vm.dispensor.contains(Cola))
       assert(vm.display === "THANK YOU")
 
+      When("the product is taken")
+      assert(vm.dispensor.pop() === Cola)
+
       Then("the display reverts to its insert coin message")
       assert(vm.display === "INSERT COIN")
     }

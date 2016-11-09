@@ -1,7 +1,9 @@
 
 import collection.mutable.Stack
 import collection.mutable.Queue
+import collection.mutable.ArrayBuffer
 
+// NOTE vending machines start with 4 nickles
 class VendingMachine {
   val insertedCoins: Stack[Coin] = Stack()
 
@@ -11,7 +13,7 @@ class VendingMachine {
 
   val displayQueue: Queue[String] = Queue()
 
-  val bank: Stack[Coin] = Stack()
+  val bank: ArrayBuffer[Coin] = ArrayBuffer(Nickle, Nickle, Nickle, Nickle)
 
   val inventory: Array[Product] = Array(Cola, Chips, Candy)
 
@@ -35,6 +37,8 @@ class VendingMachine {
       displayQueue.dequeue()
     } else if (sumCoins() > 0) {
       formatPrice(sumCoins())
+    } else if (!canMakeChange()) {
+      "EXACT CHANGE ONLY"
     } else {
       "INSERT COIN"
     }
@@ -44,15 +48,13 @@ class VendingMachine {
     val sum = sumCoins()
     if (!inventory.contains(product)) {
       displayQueue.enqueue("SOLD OUT")
-    } else if (sum >= product.cost) {
-      val change = makeChange(sum - product.cost)
+    } else if (sum >= product.cost && canMakeChange(sum - product.cost)) {
+      bank ++= insertedCoins
       insertedCoins.clear()
 
-      // TODO only return from coins in machine
+      val change = makeChange(sum - product.cost)
       coinReturn.pushAll(change)
-
-      // TODO only add coins given
-      bank.pushAll(makeChange(product.cost))
+      bank --= change
 
       displayQueue.enqueue("THANK YOU")
 
@@ -90,18 +92,34 @@ class VendingMachine {
     "$%d.%02d".format(dollars, cents % 100)
   }
 
-  private def makeChange(cents: Int): List[Coin] = {
-    def rec(needed: Int, coins: List[Coin]): List[Coin] = {
+  private def makeChange(cents: Int): List[Coin] =
+    makeChangeOption(cents) match {
+      case Some(coins) => coins
+      case None        => throw new Exception("Unreachable make change error")
+    }
+
+  private def makeChangeOption(cents: Int): Option[List[Coin]] = {
+    def rec(needed: Int, coins: List[Coin]): Option[List[Coin]] = {
       if (needed < 0 || coins.isEmpty) {
-        throw new Exception("Unreachable making change exception")
+        None
       } else if (needed == 0) {
-        List.empty
+        Some(List.empty)
       } else if (needed - coins.head.value >= 0) {
-        coins.head :: rec(needed - coins.head.value, coins)
+        rec(needed - coins.head.value, coins).
+          map(coins.head :: _)
       } else {
         rec(needed, coins.tail)
       }
     }
-    rec(cents, List(Quarter, Dime, Nickle))
+    rec(cents, bank.toList ++ insertedCoins)
   }
+
+  private def canMakeChange(): Boolean =
+    // bad algorithm, but easy to understand
+    List(5, 10, 15, 20).forall {
+      makeChangeOption(_) != None
+    }
+
+  private def canMakeChange(cents: Int): Boolean =
+    makeChangeOption(cents) != None
 }

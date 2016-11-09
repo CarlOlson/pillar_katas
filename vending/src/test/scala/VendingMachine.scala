@@ -38,6 +38,7 @@ class VendingMachineFeatureSpec extends FeatureSpec with GivenWhenThen {
     scenario("Vendor collects coins") {
       Given("a vending machine with coins")
       val vm = new VendingMachine()
+      vm.emptyBank()
       for( x <- (1 to 4) ) {
         vm.insertCoin(Quarter.mass, Quarter.diameter)
       }

@@ -171,7 +171,31 @@ class VendingMachineFeatureSpec extends FeatureSpec with GivenWhenThen {
       Then("it displays money inserted")
       assert(vm.display === "$10.00")
     }
-    scenario("Customer changes selection from sold out item") (pending)
+    scenario("Customer changes selection from sold out item") {
+      Given("a customer select a sold out item")
+      val vm = new VendingMachine()
+      for (i <- 1 to 40) vm.insertCoin(Quarter.mass, Quarter.diameter)
+      vm.select(RareCandy)
+
+      When("the selection is changed")
+      vm.select(Cola)
+
+      Then("the product is dispensed")
+      assert(vm.dispensor.length === 1)
+      assert(vm.dispensor.pop() === Cola)
+    }
+    scenario("Customer buys out an item") {
+      Given("a machine with low inventory")
+      val vm = new VendingMachine()
+
+      When("a item becomes sold out")
+      for (i <- 1 to 4) vm.insertCoin(Quarter.mass, Quarter.diameter)
+      vm.select(Cola)
+
+      Then("the display shows exact change message")
+      assert(vm.display === "THANK YOU")
+      assert(vm.display === "EXACT CHANGE ONLY")
+    }
   }
 
   info("As a customer")

@@ -10,7 +10,7 @@ class VendingMachine {
 
   def coinReturn(): Seq[Coin] =
     insertedCoins.filter(_.value > 0)
-  
+
   def display: String = {
     if (sumCoins() > 0) {
       val dollars = math.floor(sumCoins() / 100.0).toInt
@@ -20,6 +20,10 @@ class VendingMachine {
       "INSERT COIN"
     }
   }
+
+  def select(product: Product): Unit = ???
+
+  def dispensor: Seq[Product] = ???
 
   private def sumCoins(): Int =
     insertedCoins.map{ (coin) => coin.value }.sum

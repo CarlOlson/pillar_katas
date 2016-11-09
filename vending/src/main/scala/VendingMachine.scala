@@ -2,14 +2,23 @@
 class VendingMachine {
   val insertedCoins: collection.mutable.Stack[Coin] =
     collection.mutable.Stack()
+  
+  val coinReturn: collection.mutable.Stack[Coin] =
+    collection.mutable.Stack()
 
   def insertCoin(mass: Double, diameter: Double): Unit = {
     val coin = processCoin(mass, diameter)
-    insertedCoins.push(coin)
+    coin match {
+      case Nickle  =>
+        insertedCoins.push(coin)
+      case Dime    =>
+        insertedCoins.push(coin)
+      case Quarter =>
+        insertedCoins.push(coin)
+      case _ =>
+        coinReturn.push(coin)
+    }
   }
-
-  def coinReturn(): Seq[Coin] =
-    insertedCoins.filter(_.value > 0)
 
   def display: String = {
     if (sumCoins() > 0) {

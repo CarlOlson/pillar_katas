@@ -179,7 +179,27 @@ class VendingMachineFeatureSpec extends FeatureSpec with GivenWhenThen {
     "with the money I have before inserting it")
 
   feature("Exact Change Only") {
-    scenario("Machine requires exact change") (pending)
-    scenario("Machine does not require exact change") (pending)
+    scenario("Machine requires exact change") {
+      Given("a machine without reserve money")
+      val vm = new VendingMachine()
+      vm.emptyBank()
+
+      Then("the display shows exact change message")
+      assert(vm.display === "EXACT CHANGE ONLY")
+    }
+    scenario("Machine rejects inexact change") {
+      Given("a machine enough reserve money")
+      val vm = new VendingMachine()
+      vm.emptyBank()
+      vm.addToBank(List(Nickle))
+
+      When("inexact change is added")
+      for (i <- 1 to 3) vm.insertCoin(Quarter.mass, Quarter.diameter)
+
+      Then("a product cannot be purchased")
+      vm.select(Candy)
+      assert(vm.dispensor.isEmpty)
+      assert(vm.display === "$0.75")
+    }
   }
 }

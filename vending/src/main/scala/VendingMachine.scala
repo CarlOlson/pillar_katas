@@ -74,6 +74,8 @@ class VendingMachine {
     coins
   }
 
+  def addToBank(coins: Seq[Coin]): Unit = ???
+
   private def sumCoins(): Int =
     insertedCoins.map{ (coin) => coin.value }.sum
 

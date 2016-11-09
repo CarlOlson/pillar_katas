@@ -112,10 +112,11 @@ class VendingMachine {
         passes(diameter, std_diameter))
     } yield coin1
 
-    if (possible.size == 1)
+    if (possible.size == 1) {
       possible.head
-    else
+    } else {
       UnknownCoin(mass, diameter)
+    }
   }
 
   private def formatPrice(cents: Int): String = {
@@ -129,7 +130,9 @@ class VendingMachine {
       case None        => throw new Exception("Unreachable make change error")
     }
 
-  private def makeChangeOption(cents: Int, coins: List[Coin] = bank.toList ++ insertedCoins): Option[List[Coin]] = {
+  private def makeChangeOption(cents: Int,
+                               coins: List[Coin] =
+                                 bank.toList ++ insertedCoins): Option[List[Coin]] = {
     def rec(needed: Int, coins: List[Coin], acc: List[Coin]): Option[List[Coin]] = {
       if (needed == 0) {
         Some(acc)

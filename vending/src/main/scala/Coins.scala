@@ -41,7 +41,7 @@ object Coins {
     2.268 -> Dime,
     5.670 -> Quarter
   );
-  
+
   // millimeters
   val diameter = Map(
     19.05 -> Penny,

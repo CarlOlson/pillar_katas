@@ -46,21 +46,24 @@ class VendingMachine {
 
   def select(product: Product): Unit = {
     val sum = sumCoins()
+
     if (!inventory.contains(product)) {
       displayQueue.enqueue("SOLD OUT")
     } else if (sum >= product.cost && canMakeChange(sum - product.cost)) {
+
       bank ++= insertedCoins
       insertedCoins.clear()
 
       val change = makeChange(sum - product.cost)
       coinReturn.pushAll(change)
-      bank --= change
+      for(coin <- change)
+        bank -= coin
 
       displayQueue.enqueue("THANK YOU")
 
       // TODO remove product from inventory
       dispensor.push(product)
-    } else {
+    } else if (sum < product.cost) {
       displayQueue.enqueue("PRICE " + formatPrice(product.cost))
     }
   }
@@ -76,7 +79,8 @@ class VendingMachine {
     coins
   }
 
-  def addToBank(coins: Seq[Coin]): Unit = ???
+  def addToBank(coins: Seq[Coin]): Unit =
+    bank ++= coins
 
   private def sumCoins(): Int =
     insertedCoins.map{ (coin) => coin.value }.sum
@@ -99,23 +103,25 @@ class VendingMachine {
     }
 
   private def makeChangeOption(cents: Int): Option[List[Coin]] = {
-    def rec(needed: Int, coins: List[Coin]): Option[List[Coin]] = {
-      if (needed < 0 || coins.isEmpty) {
+    def rec(needed: Int, coins: List[Coin], acc: List[Coin]): Option[List[Coin]] = {
+      if (needed == 0) {
+        Some(acc)
+      } else if (needed < 0 || coins.isEmpty) {
         None
-      } else if (needed == 0) {
-        Some(List.empty)
       } else if (needed - coins.head.value >= 0) {
-        rec(needed - coins.head.value, coins).
-          map(coins.head :: _)
+        rec(needed - coins.head.value, coins.tail, coins.head :: acc)
       } else {
-        rec(needed, coins.tail)
+        rec(needed, coins.tail, acc)
       }
     }
-    rec(cents, bank.toList ++ insertedCoins)
+    // sort coins by descending order
+    val coins = (bank.toList ++ insertedCoins).sortBy(_.value).reverse
+    rec(cents, coins, List.empty)
   }
 
   private def canMakeChange(): Boolean =
     // bad algorithm, but easy to understand
+    // TODO base on actual items in inventory
     List(5, 10, 15, 20).forall {
       makeChangeOption(_) != None
     }

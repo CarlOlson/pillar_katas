@@ -17,7 +17,7 @@ more than the problem asked for.  TDD helped me focus on what was
 important and implement those features as simply as possible.
 
 *** Vending Machine
-I save the most fun looking one for last.  This was completed with
+I saved the most fun looking one for last.  This was completed with
 Scala, a language I'm still learning.  I used used rigid TDD like in
 Red Pencil, only implementing features after a test fails.
 

@@ -12,6 +12,8 @@ class VendingMachine {
   val THANK_YOU_MESSAGE    = "THANK YOU"
   val PRICE_FORMAT         = "$%d.%02d"
   val PRICE_CHECK_PREFIX   = "PRICE "
+  val LOWER_TOLERANCE      = 0.98
+  val UPPER_TOLERANCE      = 1.00
 
   val coinReturn : Stack[Coin]    = Stack()
   val dispensor  : Stack[Product] = Stack()
@@ -90,9 +92,30 @@ class VendingMachine {
     insertedCoins.map{ (coin) => coin.value }.sum
 
   private def processCoin(mass: Double, diameter: Double): Coin = {
-    val coin = Coins.mass(mass)
-    if (coin == Coins.diameter(diameter)) coin
-    else UnknownCoin(mass, diameter)
+    def percent(num: Double, base: Double) =
+      num / base
+
+    def between(a: Double, b: Double, c: Double) =
+      a <= b && b <= c
+
+    def passes(measure: Double, std_measure: Double) =
+      between(
+        LOWER_TOLERANCE,
+        percent(measure, std_measure),
+        UPPER_TOLERANCE)
+
+    val possible = for {
+      (std_mass,     coin1) <- Coins.mass
+      (std_diameter, coin2) <- Coins.diameter
+      if (coin1 == coin2 &&
+        passes(mass, std_mass) &&
+        passes(diameter, std_diameter))
+    } yield coin1
+
+    if (possible.size == 1)
+      possible.head
+    else
+      UnknownCoin(mass, diameter)
   }
 
   private def formatPrice(cents: Int): String = {

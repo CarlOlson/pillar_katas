@@ -1,5 +1,6 @@
 
 import collection.mutable.Stack
+import collection.mutable.Queue
 
 class VendingMachine {
   val insertedCoins: Stack[Coin] = Stack()
@@ -8,7 +9,7 @@ class VendingMachine {
 
   val dispensor: Stack[Product] = Stack()
 
-  val unthanked: Boolean = false
+  val displayQueue: Queue[String] = Queue()
 
   def insertCoin(mass: Double, diameter: Double): Unit = {
     val coin = processCoin(mass, diameter)
@@ -25,12 +26,10 @@ class VendingMachine {
   }
 
   def display: String = {
-    if (sumCoins() > 0) {
-      val dollars = math.floor(sumCoins() / 100.0).toInt
-      val cents = sumCoins() % 100
-      "$%d.%02d".format(dollars, cents)
-    } else if (!dispensor.isEmpty) {
-      "THANK YOU"
+    if (!displayQueue.isEmpty) {
+      displayQueue.dequeue()
+    } else if (sumCoins() > 0) {
+      formatPrice(sumCoins())
     } else {
       "INSERT COIN"
     }
@@ -42,8 +41,10 @@ class VendingMachine {
       val change = sum - product.cost
       insertedCoins.clear()
 
+      displayQueue.enqueue("THANK YOU")
       dispensor.push(product)
     } else {
+      displayQueue.enqueue("PRICE " + formatPrice(product.cost))
     }
   }
 
@@ -54,5 +55,10 @@ class VendingMachine {
     val coin = Coins.mass(mass)
     if (coin == Coins.diameter(diameter)) coin
     else UnknownCoin(mass, diameter)
+  }
+
+  private def formatPrice(cents: Int): String = {
+    val dollars = math.floor(cents / 100.0).toInt
+    "$%d.%02d".format(dollars, cents % 100)
   }
 }

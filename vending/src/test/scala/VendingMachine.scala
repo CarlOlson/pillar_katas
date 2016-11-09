@@ -69,11 +69,29 @@ class VendingMachineFeatureSpec extends FeatureSpec with GivenWhenThen {
       assert(vm.dispensor.contains(Cola))
       assert(vm.display === "THANK YOU")
 
-      When("the product is taken")
-      assert(vm.dispensor.pop() === Cola)
-
       Then("the display reverts to its insert coin message")
       assert(vm.display === "INSERT COIN")
+
+      When("the product is taken")
+      val received = vm.dispensor.pop()
+
+      Then("it matches selection")
+      assert(received === Cola)
+    }
+
+    scenario("Customer can't purchase a product") {
+      Given("a customer doesn't insert enough coins")
+      val vm = new VendingMachine()
+      vm.insertCoin(Quarter.mass, Quarter.diameter)
+
+      When("an item is selected")
+      vm.select(Cola)
+
+      Then("it displays the price")
+      assert(vm.display === "PRICE $1.00")
+
+      Then("the display reverts to amount inserted")
+      assert(vm.display === "$0.25")
     }
   }
 

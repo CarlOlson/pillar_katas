@@ -8,7 +8,8 @@ class VendingMachine {
     insertedCoins.push(coin)
   }
 
-  def coinReturn(): Seq[Coin] = ???
+  def coinReturn(): Seq[Coin] =
+    insertedCoins.filter(_.value > 0)
   
   def display: String = {
     if (sumCoins() > 0) {

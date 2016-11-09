@@ -11,6 +11,8 @@ class VendingMachine {
 
   val displayQueue: Queue[String] = Queue()
 
+  val bank: Stack[Coin] = Stack()
+
   def insertCoin(mass: Double, diameter: Double): Unit = {
     val coin = processCoin(mass, diameter)
     coin match {
@@ -40,7 +42,12 @@ class VendingMachine {
     if (sum >= product.cost) {
       val change = makeChange(sum - product.cost)
       insertedCoins.clear()
+
+      // TODO only return from coins in machine
       coinReturn.pushAll(change)
+
+      // TODO only add coins given
+      bank.pushAll(makeChange(product.cost))
 
       displayQueue.enqueue("THANK YOU")
       dispensor.push(product)
@@ -52,6 +59,12 @@ class VendingMachine {
   def returnCoins(): Unit = {
     coinReturn.pushAll(insertedCoins)
     insertedCoins.clear()
+  }
+
+  def emptyBank(): Seq[Coin] = {
+    val coins = bank.toList
+    bank.clear()
+    coins
   }
 
   private def sumCoins(): Int =

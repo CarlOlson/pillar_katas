@@ -41,12 +41,13 @@ class VendingMachineFeatureSpec extends FeatureSpec with GivenWhenThen {
       for( x <- (1 to 4) ) {
         vm.insertCoin(Quarter.mass, Quarter.diameter)
       }
-      // TODO purchase something
+      vm.select(Cola)
 
       When("a vender collects coins")
-      (pending)
+      val coins = vm.emptyBank()
 
       Then("the coins are removed")
+      assert(coins.map(_.value).sum === 100)
     }
   }
 

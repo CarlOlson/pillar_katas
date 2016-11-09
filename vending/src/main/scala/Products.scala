@@ -14,3 +14,7 @@ case object Chips extends Product {
 case object Candy extends Product {
   val cost = 65
 }
+
+case object RareCandy extends Product {
+  val cost = 1000
+}

@@ -13,8 +13,11 @@ class VendingMachine {
 
   val bank: Stack[Coin] = Stack()
 
+  val inventory: Array[Product] = Array(Cola, Chips, Candy)
+
   def insertCoin(mass: Double, diameter: Double): Unit = {
     val coin = processCoin(mass, diameter)
+
     coin match {
       case Nickle  =>
         insertedCoins.push(coin)
@@ -39,7 +42,9 @@ class VendingMachine {
 
   def select(product: Product): Unit = {
     val sum = sumCoins()
-    if (sum >= product.cost) {
+    if (!inventory.contains(product)) {
+      displayQueue.enqueue("SOLD OUT")
+    } else if (sum >= product.cost) {
       val change = makeChange(sum - product.cost)
       insertedCoins.clear()
 
@@ -50,6 +55,8 @@ class VendingMachine {
       bank.pushAll(makeChange(product.cost))
 
       displayQueue.enqueue("THANK YOU")
+
+      // TODO remove product from inventory
       dispensor.push(product)
     } else {
       displayQueue.enqueue("PRICE " + formatPrice(product.cost))

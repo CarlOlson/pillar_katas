@@ -49,6 +49,11 @@ class VendingMachine {
     }
   }
 
+  def returnCoins(): Unit = {
+    coinReturn.pushAll(insertedCoins)
+    insertedCoins.clear()
+  }
+
   private def sumCoins(): Int =
     insertedCoins.map{ (coin) => coin.value }.sum
 
@@ -63,7 +68,7 @@ class VendingMachine {
     "$%d.%02d".format(dollars, cents % 100)
   }
 
-  def makeChange(cents: Int): List[Coin] = {
+  private def makeChange(cents: Int): List[Coin] = {
     def rec(needed: Int, coins: List[Coin]): List[Coin] = {
       if (needed < 0 || coins.isEmpty) {
         throw new Exception("Unreachable making change exception")

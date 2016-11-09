@@ -4,66 +4,71 @@ import collection.mutable.Queue
 import collection.mutable.ArrayBuffer
 
 // NOTE vending machines start with 4 nickles
+// NOTE vending machines start with one Cola, Chip, and Candy each
 class VendingMachine {
-  val insertedCoins: Stack[Coin] = Stack()
+  val EXACT_CHANGE_MESSAGE = "EXACT CHANGE ONLY"
+  val INSERT_COIN_MESSAGE  = "INSERT COIN"
+  val SOLD_OUT_MESSAGE     = "SOLD OUT"
+  val THANK_YOU_MESSAGE    = "THANK YOU"
+  val PRICE_FORMAT         = "$%d.%02d"
+  val PRICE_CHECK_PREFIX   = "PRICE "
 
-  val coinReturn: Stack[Coin] = Stack()
+  val coinReturn : Stack[Coin]    = Stack()
+  val dispensor  : Stack[Product] = Stack()
 
-  val dispensor: Stack[Product] = Stack()
+  private val insertedCoins: Stack[Coin]   = Stack()
+  private val displayQueue : Queue[String] = Queue()
+  private val bank      : ArrayBuffer[Coin]    = ArrayBuffer(Nickle, Nickle, Nickle, Nickle)
+  private val inventory : ArrayBuffer[Product] = ArrayBuffer(Cola, Chips, Candy)
 
-  val displayQueue: Queue[String] = Queue()
-
-  val bank: ArrayBuffer[Coin] = ArrayBuffer(Nickle, Nickle, Nickle, Nickle)
-
-  val inventory: ArrayBuffer[Product] = ArrayBuffer(Cola, Chips, Candy)
-
-  def insertCoin(mass: Double, diameter: Double): Unit = {
-    val coin = processCoin(mass, diameter)
-
-    coin match {
+  def insertCoin(mass: Double, diameter: Double): Unit =
+    processCoin(mass, diameter) match {
       case Nickle  =>
-        insertedCoins.push(coin)
+        insertedCoins.push(Nickle)
       case Dime    =>
-        insertedCoins.push(coin)
+        insertedCoins.push(Dime)
       case Quarter =>
-        insertedCoins.push(coin)
-      case _ =>
+        insertedCoins.push(Quarter)
+      case coin =>
         coinReturn.push(coin)
     }
-  }
 
-  def display: String = {
+  def display: String =
     if (!displayQueue.isEmpty) {
       displayQueue.dequeue()
     } else if (sumCoins() > 0) {
       formatPrice(sumCoins())
     } else if (!canMakeChange()) {
-      "EXACT CHANGE ONLY"
+      EXACT_CHANGE_MESSAGE
     } else {
-      "INSERT COIN"
+      INSERT_COIN_MESSAGE
     }
-  }
 
   def select(product: Product): Unit = {
     val sum = sumCoins()
 
     if (!inventory.contains(product)) {
-      displayQueue.enqueue("SOLD OUT")
+      displayQueue.enqueue(SOLD_OUT_MESSAGE)
     } else if (sum >= product.cost && canMakeChange(sum - product.cost)) {
+      // accept coins
       bank ++= insertedCoins
       insertedCoins.clear()
 
+      // make change
       val change = makeChange(sum - product.cost)
-      coinReturn.pushAll(change)
-      for(coin <- change)
+      for (coin <- change) {
         bank -= coin
+        coinReturn.push(coin)
+      }
 
-      displayQueue.enqueue("THANK YOU")
-
+      // dispense
       inventory -= product
       dispensor.push(product)
+
+      // thank
+      displayQueue.enqueue(THANK_YOU_MESSAGE)
     } else if (sum < product.cost) {
-      displayQueue.enqueue("PRICE " + formatPrice(product.cost))
+      displayQueue.enqueue(PRICE_CHECK_PREFIX + formatPrice(product.cost))
     }
   }
 
@@ -92,7 +97,7 @@ class VendingMachine {
 
   private def formatPrice(cents: Int): String = {
     val dollars = math.floor(cents / 100.0).toInt
-    "$%d.%02d".format(dollars, cents % 100)
+    PRICE_FORMAT.format(dollars, cents % 100)
   }
 
   private def makeChange(cents: Int): List[Coin] =
@@ -113,6 +118,7 @@ class VendingMachine {
         rec(needed, coins.tail, acc)
       }
     }
+
     // sort coins by descending order
     val coins = (bank.toList ++ insertedCoins).sortBy(_.value).reverse
     rec(cents, coins, List.empty)

@@ -38,8 +38,9 @@ class VendingMachine {
   def select(product: Product): Unit = {
     val sum = sumCoins()
     if (sum >= product.cost) {
-      val change = sum - product.cost
+      val change = makeChange(sum - product.cost)
       insertedCoins.clear()
+      coinReturn.pushAll(change)
 
       displayQueue.enqueue("THANK YOU")
       dispensor.push(product)
@@ -60,5 +61,20 @@ class VendingMachine {
   private def formatPrice(cents: Int): String = {
     val dollars = math.floor(cents / 100.0).toInt
     "$%d.%02d".format(dollars, cents % 100)
+  }
+
+  def makeChange(cents: Int): List[Coin] = {
+    def rec(needed: Int, coins: List[Coin]): List[Coin] = {
+      if (needed < 0 || coins.isEmpty) {
+        throw new Exception("Unreachable making change exception")
+      } else if (needed == 0) {
+        List.empty
+      } else if (needed - coins.head.value >= 0) {
+        coins.head :: rec(needed - coins.head.value, coins)
+      } else {
+        rec(needed, coins.tail)
+      }
+    }
+    rec(cents, List(Quarter, Dime, Nickle))
   }
 }

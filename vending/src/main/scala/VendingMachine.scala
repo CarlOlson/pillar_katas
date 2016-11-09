@@ -15,7 +15,7 @@ class VendingMachine {
 
   val bank: ArrayBuffer[Coin] = ArrayBuffer(Nickle, Nickle, Nickle, Nickle)
 
-  val inventory: Array[Product] = Array(Cola, Chips, Candy)
+  val inventory: ArrayBuffer[Product] = ArrayBuffer(Cola, Chips, Candy)
 
   def insertCoin(mass: Double, diameter: Double): Unit = {
     val coin = processCoin(mass, diameter)
@@ -50,7 +50,6 @@ class VendingMachine {
     if (!inventory.contains(product)) {
       displayQueue.enqueue("SOLD OUT")
     } else if (sum >= product.cost && canMakeChange(sum - product.cost)) {
-
       bank ++= insertedCoins
       insertedCoins.clear()
 
@@ -61,7 +60,7 @@ class VendingMachine {
 
       displayQueue.enqueue("THANK YOU")
 
-      // TODO remove product from inventory
+      inventory -= product
       dispensor.push(product)
     } else if (sum < product.cost) {
       displayQueue.enqueue("PRICE " + formatPrice(product.cost))

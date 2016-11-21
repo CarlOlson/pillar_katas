@@ -41,20 +41,19 @@ module Yahtzee
   def rule_two_pair(rolls, _rule)
     pairs = pairs rolls
 
-    if pairs.length >= 2
-      pairs.take(2).reduce(:+) * 2
+    if pairs.length >= 4
+      pairs.take(4).reduce(:+)
     else
       0
     end
   end
 
   def rule_full_house(rolls, _rule)
-    triple = rolls.find { |roll| rolls.count(roll) == 3 }
-    pairs  = pairs(rolls.reject { |roll| roll == triple })
-    pair   = pairs.first
+    has_triple = rolls.any? { |roll| rolls.count(roll) == 3 }
+    has_pair   = rolls.any? { |roll| rolls.count(roll) == 2 }
 
-    if triple && pair
-      triple * 3 + pair * 2
+    if has_triple && has_pair
+      rolls.reduce(:+)
     else
       0
     end
@@ -65,14 +64,10 @@ module Yahtzee
   end
 
   def pairs(nums)
-    nums.reduce([]) do |pairs, num|
-      pair_count = nums.count(num) / 2
-      if !pairs.include?(num) &&
-         pair_count >= 1
-        pairs + [num] * pair_count
-      else
-        pairs
-      end
-    end
+    nums
+      .group_by(&:itself)
+      .values
+      .map { |group| group.drop(group.size % 2) }
+      .flatten
   end
 end
